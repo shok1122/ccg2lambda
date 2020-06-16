@@ -45,33 +45,38 @@ WORKDIR /app
 ADD . /app
 
 # Install C&C
+# candc-linux-1.00
 WORKDIR /app/parsers
-ADD http://www.cl.cam.ac.uk/~sc609/resources/candc-downloads/candc-linux-1.00.tgz /app/parsers/candc-linux-1.00.tgz
-RUN tar xvf candc-linux-1.00.tgz
+RUN /app/wget-from-gdrive.sh \
+		1MAqE0RmAC1sOW6A9ErpQcFmFbzD66i7x \
+		/app/parsers/candc-linux-1.00.tgz \
+	&& tar xvf candc-linux-1.00.tgz
+# models-1.02
 WORKDIR /app/parsers/candc-1.00
-ADD http://www.cl.cam.ac.uk/~sc609/resources/candc-downloads/models-1.02.tgz /app/parsers/candc-1.00/models-1.02.tgz
-RUN tar xvf models-1.02.tgz && \
-    echo "/app/parsers/candc-1.00" >> /app/en/candc_location.txt && \
-    echo "candc:/app/parsers/candc-1.00" >> /app/en/parser_location.txt
+RUN /app/wget-from-gdrive.sh \
+		1LR6h3rX7a4Dq7fV_bc2mEmeYxteSyenH \
+		/app/parsers/candc-1.00/models-1.02.tgz \
+	&& tar xvf models-1.02.tgz \
+    && echo "/app/parsers/candc-1.00" >> /app/en/candc_location.txt \
+    && echo "candc:/app/parsers/candc-1.00" >> /app/en/parser_location.txt
 
 # Install easyccg
 WORKDIR /app/parsers/easyccg
 COPY --from=build-env /build/easyccg/easyccg.jar /app/parsers/easyccg/easyccg.jar
-ADD https://drive.google.com/uc?export=download&id=0B7AY6PGZ8lc-dUN4SDcxWkczM2M /app/parsers/easyccg/model.tar.gz
-RUN tar xvf model.tar.gz && \
-    echo "easyccg:"`pwd` >> /app/en/parser_location.txt
+RUN /app/wget-from-gdrive.sh \
+		0B7AY6PGZ8lc-dUN4SDcxWkczM2M \
+		/app/parsers/easyccg/model.tar.gz \
+	&& tar xvf model.tar.gz \
+    && echo "easyccg:"`pwd` >> /app/en/parser_location.txt
 
 # Install EasySRL
 WORKDIR /app/parsers/EasySRL
 COPY --from=build-env /build/EasySRL/easysrl.jar /app/parsers/EasySRL/easysrl.jar
-# Download model file (the ugly script is due to downloading the large file from Google Drive)
-RUN wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet \
-    --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate \
-    'https://docs.google.com/uc?export=download&id=0B7AY6PGZ8lc-R1E3aTA5WG54bWM' -O- | \
-    sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=0B7AY6PGZ8lc-R1E3aTA5WG54bWM" -O model.tar.gz 2> /dev/null && \
-    rm -rf /tmp/cookies.txt && \
-    tar xvf model.tar.gz && \
-    echo "easysrl:/app/parsers/EasySRL/" >> /app/en/parser_location.txt
+RUN /app/wget-from-gdrive.sh \
+		0B7AY6PGZ8lc-R1E3aTA5WG54bWM \
+		/app/parsers/EasySRL/model.tar.gz \
+	&& tar xvf model.tar.gz \
+	&& echo "easysrl:/app/parsers/EasySRL/" >> /app/en/parser_location.txt
 
 # Install Jigg
 COPY --from=build-env /build/jigg-v-0.4/jar/jigg-0.4.jar /app/parsers/jigg-v-0.4/jar/jigg-0.4.jar
@@ -91,3 +96,4 @@ RUN cp ./en/coqlib_sick.v ./coqlib.v && coqc coqlib.v && \
     cp ./en/tactics_coq_sick.txt ./tactics_coq.txt
 # CMD ["en/rte_en_mp_any.sh", "en/sample_en.txt", "en/semantic_templates_en_emnlp2015.yaml"]
 CMD ["/bin/bash"]
+
