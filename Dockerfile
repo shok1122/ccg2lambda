@@ -36,6 +36,7 @@ RUN sed -i -s '/debian jessie-updates main/d' /etc/apt/sources.list && \
         coq=8.4pl4dfsg-1 \
         libxml2-dev \
         libxslt1-dev && \
+        vim && \
     rm -rf /var/lib/apt/lists/* && \
     pip install -U pip && \
     pip install lxml simplejson pyyaml -I nltk==3.0.5 cython numpy chainer==4.0.0 && \
