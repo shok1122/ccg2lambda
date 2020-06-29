@@ -24,23 +24,24 @@ ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
 
 # Install ccg2lambda specific dependencies
-RUN sed -i -s '/debian jessie-updates main/d' /etc/apt/sources.list && \
-    echo "deb http://archive.debian.org/debian jessie-backports main" >> /etc/apt/sources.list && \
-    echo "Acquire::Check-Valid-Until false;" >/etc/apt/apt.conf.d/10-nocheckvalid && \
-    echo 'Package: *\nPin: origin "archive.debian.org"\nPin-Priority: 500' >/etc/apt/preferences.d/10-archive-pi && \
-    apt-get update && \
-    apt-get install -y openjdk-8-jre && \
-    apt-get update --fix-missing && \
-    apt-get install -y \
+RUN sed -i -s '/debian jessie-updates main/d' /etc/apt/sources.list \
+    && echo "deb http://archive.debian.org/debian jessie-backports main" >> /etc/apt/sources.list \
+    && echo "Acquire::Check-Valid-Until false;" >/etc/apt/apt.conf.d/10-nocheckvalid \
+    && echo 'Package: *\nPin: origin "archive.debian.org"\nPin-Priority: 500' >/etc/apt/preferences.d/10-archive-pi \
+    && apt-get update \
+    && apt-get install -y openjdk-8-jre \
+    && apt-get update --fix-missing \
+    && apt-get install -y \
         bc \
         coq=8.4pl4dfsg-1 \
         libxml2-dev \
         libxslt1-dev \
-        vim && \
-    rm -rf /var/lib/apt/lists/* && \
-    pip install -U pip && \
-    pip install lxml simplejson pyyaml -I nltk==3.0.5 cython numpy chainer==4.0.0 && \
-    python -c "import nltk; nltk.download('wordnet')"
+        vim \
+        unzip \
+    && rm -rf /var/lib/apt/lists/* \
+    && pip install -U pip \
+    && pip install lxml simplejson pyyaml -I nltk==3.0.5 cython numpy chainer==4.0.0 \
+    && python -c "import nltk; nltk.download('wordnet')"
 
 WORKDIR /opt/ccg2lambda
 ADD . /opt/ccg2lambda
