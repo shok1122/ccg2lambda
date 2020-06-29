@@ -64,9 +64,22 @@ run_test()
         > $dir_cache/sentences.html
 }
 
+run_experiment()
+{
+    local dir=$APP_SHARE/experiment/$1
+    if [ ! -d $dir ]; then
+        echo "$dir is not found."
+        exit 0
+    fi
+    $dir/run.sh
+}
+
 case $1 in
     "test")
         run_test "$2"
+        ;;
+    "experiment")
+        run_experiment "$2"
         ;;
     *)
         help
